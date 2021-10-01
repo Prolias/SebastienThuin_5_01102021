@@ -32,7 +32,9 @@ const createProduct = (value) => {
     document.getElementById('price').innerText = value.price;
     document.getElementById('description').innerText = value.description;
 
-    
+    document.getElementById('addToCart').onclick = () => {
+        addToCart(value._id);
+    }
 }
 
 getKanap();
