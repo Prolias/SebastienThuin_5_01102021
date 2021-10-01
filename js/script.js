@@ -20,8 +20,7 @@ let getAllKanap = async () => {
 }
 
 let createCard = (value) => {
-    console.log(value);
-    let link = createLink();
+    let link = createLink(`/product/?id=${value._id}`);
     let article = createArticle();
 
     let image = createImage(value.imageUrl, value.altTxt);
@@ -35,12 +34,6 @@ let createCard = (value) => {
 
     link.appendChild(article);
     document.getElementById('items').appendChild(link);
-
-    link.onclick = () => {
-        const redirect = new URL(window.location + 'product/');
-        redirect.searchParams.set('id', value._id);
-        window.location.href = redirect;
-    }
 }
 
 getAllKanap();

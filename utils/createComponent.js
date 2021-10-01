@@ -16,8 +16,9 @@ export const createP = (inner, className) => {
     return p
 }
 
-export const createLink = (className) => {
+export const createLink = (href, className) => {
     let link = document.createElement('a')
+    link.href = href
 
     addClassToElement(link, className)
 
