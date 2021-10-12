@@ -43,9 +43,21 @@ export const createH3 = (inner, className) => {
     return h3
 }
 
-export const createButton = (className) => {
+export const createH2 = (inner, className) => {
+    let h2 = document.createElement('h2')
+
+    addClassToElement(h2, className)
+
+    h2.innerText = inner
+
+    return h2
+}
+
+export const createButton = (inner, className) => {
     let button = document.createElement('button')
     button.type = 'button'
+
+    button.innerText = inner;
     
     addClassToElement(button, className)
     

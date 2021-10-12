@@ -8,7 +8,8 @@ export const getAmountCart = () => {
         cartAmount = cart.length
     }
     
-    // document.getElementById('cart-amount').innerText = cartAmount;
+    document.getElementById('amountCart').innerText = cartAmount;
+
 }
 
 export const addToCart = (id) => {
