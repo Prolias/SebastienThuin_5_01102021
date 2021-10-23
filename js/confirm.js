@@ -1,4 +1,4 @@
-const url = "http://localhost:3000/api/products/orders";
+import { api } from "../utils/utils";
 
 /**
  * If the confirm array in localstorage is found execute the confirm function else redirect to the main page
@@ -17,7 +17,7 @@ const commande = () => {
  * Post the data from the cart form then give an orderId for the client
  */
 const confirm = async () => {
-    let response = await fetch( "http://localhost:3000/api/products/order", {
+    let response = await fetch( `${api}/order`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'

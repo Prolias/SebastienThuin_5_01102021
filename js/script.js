@@ -1,8 +1,8 @@
 import { createArticle, createH3, createImage, createLink, createP } from "../utils/createComponent.js";
 import { fetchData } from "../utils/fetcher.js";
 import { getAmountCart } from "../utils/gestionCart.js";
+import { api } from "../utils/utils.js";
 
-const url = "http://localhost:3000/api/products";
 let allKanap;
 
 /**
@@ -12,7 +12,7 @@ let allKanap;
 let getAllKanap = async () => {
     getAmountCart();
 
-    allKanap = await fetchData(url);
+    allKanap = await fetchData(api);
 
     allKanap.forEach(element => {
         createCard(element)

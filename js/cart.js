@@ -1,8 +1,8 @@
 import { createArticle, createButton, createDiv, createH2, createImage, createP } from "../utils/createComponent.js";
 import { fetchData } from "../utils/fetcher.js";
 import { getAmountCart, returnAmount } from "../utils/gestionCart.js";
+import { api } from "../utils/utils.js";
 
-const url = "http://localhost:3000/api/products/";
 let cartLs = new Map();
 
 let total = 0;
@@ -50,7 +50,7 @@ const cycleData = () => {
     }
     
     cartLs.forEach(async (value, key) => {
-        let line = await fetchData(url + key);
+        let line = await fetchData(api + key);
         createLine(line, value);
         
         total += line.price * value;

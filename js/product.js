@@ -1,9 +1,9 @@
 import { createImage } from "../utils/createComponent.js";
 import { fetchData } from "../utils/fetcher.js";
 import { getAmountCart } from "../utils/gestionCart.js";
+import { api } from "../utils/utils.js";
 
 const id = (new URL(document.location)).searchParams.get('id');
-const url = "http://localhost:3000/api/products/";
 
 let kanap;
 
@@ -14,7 +14,7 @@ let kanap;
 const getKanap = async () => {
     getAmountCart();
     
-    kanap = await fetchData(url + id);
+    kanap = await fetchData(api + id);
     
     if(id == null || Object.keys(kanap).length === 0) {
         const redirect = new URL(window.location.origin + "/404");
