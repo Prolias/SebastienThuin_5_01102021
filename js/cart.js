@@ -11,52 +11,62 @@ if(window.localStorage.panier != null) {
     cartLs = new Map(JSON.parse(window.localStorage.panier));
 }
 
+/**
+ * Execute all the functions needed to get the cart and show it 
+ */
 const getAllPanier = async () => {
     setTotalPrice();
     getAmountCart();
     
     cycleData();
 
-    document.getElementById('order').onclick = () => {
-        postCart();
-    }
-    
     postCart();
 }
 
+/**
+ * Set the total price in cart
+ */
 const setTotalPrice = () => {
     document.getElementById('totalPrice').innerText = `${total}`;
 }
 
+/**
+ * Set the total quantity of products in cart
+ */
 const setTotalQte = () => {
     document.getElementById('totalQuantity').innerText = returnAmount();
 }
 
+/**
+ * Cycle through all the products in the localStorage then call the createLine function
+ */
 const cycleData = () => {
-    const order = document.getElementById('order');
+    const order = document.getElementById('cartForm');
     if(returnAmount() == 0) {
-        order.disabled = true;
+        order.style.display = 'none';
     }
     else {
-        order.disabled = false;
+        order.style.display= 'block';
     }
-
-    let i = 0;
     
-    cartLs.forEach(async (value, key, map) => {
+    cartLs.forEach(async (value, key) => {
         let line = await fetchData(url + key);
-        createLine(line, i, value);
+        createLine(line, value);
         
         total += line.price * value;
         
-        i += 1;
         setTotalPrice();
     })
     
     setTotalQte();
 }
 
-const createLine = (object, i, num) => {
+/**
+ * Create a line with all the information of the product
+ * @param {Array} object the product
+ * @param {Number} qte the quantity of product
+ */
+const createLine = (object, qte) => {
     const line = createArticle('cart__item');
     line.dataset.id = object._id;
     
@@ -74,7 +84,7 @@ const createLine = (object, i, num) => {
     divContent.appendChild(divTitlePrice);
     const divSettings = createDiv('cart__item__content__settings');
     const divQuantite = createDiv('quantite__item__content__settings__quantity')
-    divQuantite.appendChild(createP(`Qté : ${num}`));
+    divQuantite.appendChild(createP(`Qté : ${qte}`));
     divSettings.appendChild(divQuantite);
     const divDelete = createDiv('delete__item__content__settings__delete');
     const deleteBtn = createButton('Supprimer', 'deleteItem');
@@ -89,6 +99,10 @@ const createLine = (object, i, num) => {
     document.getElementById('cart__items').appendChild(line);
 }
 
+/**
+ * Get the product and delete it from the cart
+ * @param {Number} id of a product
+ */
 const deleteItemCart = id => {
     cartLs.delete(id)
     
@@ -104,11 +118,41 @@ const deleteItemCart = id => {
     getAmountCart();
 }
 
+/* Regex check */
+
+/**
+ * Regex which verify if it's a name
+ * @param {string} value 
+ * @returns true or false
+ */
 const regexName = value => /^[a-zA-ZÀ-ÖØ-öø-ÿ]+$/.test(value);
+
+/**
+ * Regex which verify if it's an address
+ * @param {string} value 
+ * @returns true or false
+ */
 const regexAddress = value => /^[#.0-9a-zA-Z\s,-]+$/.test(value);
+
+/**
+ * Regex which verify if it's a city
+ * @param {string} value 
+ * @returns true or false
+ */
 const regexCity = value => /^[a-zA-ZÀ-ÖØ-öø-ÿ]+(?:[\s-][a-zA-Z]+)*$/.test(value);
+
+/**
+ * Regex which verify if it's an email
+ * @param {string} value 
+ * @returns true or false
+ */
 const regexEmail = value => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value);
 
+/**
+ * Test if a contact is valid else show error message
+ * @param {Array} contact 
+ * @returns true or false
+ */
 const testContact = contact => {
     resetError();
     if(regexName(contact.firstName) && regexName(contact.lastName) && regexAddress(contact.address) && regexCity(contact.city) && regexEmail(contact.email)) {
@@ -125,6 +169,9 @@ const testContact = contact => {
     }
 }
 
+/**
+ * Reset all error messages
+ */
 const resetError = () => {
     document.getElementById('firstNameErrorMsg').innerText = '';
     document.getElementById('lastNameErrorMsg').innerText = '';
@@ -133,9 +180,12 @@ const resetError = () => {
     document.getElementById('emailErrorMsg').innerText = '';
 }
 
+/**
+ * Get all information from the form, test if it's valid then send an array of product and all contact information to the confirmation page
+ */
 const postCart = async () => {
     const button = document.getElementById("order");
-    
+
     button.onclick = () => {
         const contact = {
             "firstName": document.getElementById("firstName").value,
@@ -164,6 +214,11 @@ const postCart = async () => {
     }
 }
 
+/**
+ * Get a map of products and transform it to an array of products
+ * @param {Map} map 
+ * @returns An array of products
+ */
 const arrayProducts = map => {
     let array = [];
 

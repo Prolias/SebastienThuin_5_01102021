@@ -1,8 +1,8 @@
-
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
+/**
+ * Redirect the user after 10sec to the main page
+ */
 const redirect = async () => {
-    await delay(10000);
+    await new Promise(res => setTimeout(res, 10000));
     
     window.location.href = new URL(window.location.origin);
 }

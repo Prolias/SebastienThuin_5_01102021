@@ -7,6 +7,10 @@ const url = "http://localhost:3000/api/products/";
 
 let kanap;
 
+/**
+ * Fetch the product from url then fill spaces in page or redirect to main page
+ */
+
 const getKanap = async () => {
     getAmountCart();
     
@@ -23,23 +27,32 @@ const getKanap = async () => {
     }
 }
 
-const createProduct = (value) => {
-    let image = createImage(value.imageUrl, value.altTxt);
+/**
+ * Fill the page with the product value
+ * @param {Array} product 
+ */
+const createProduct = product => {
+    let image = createImage(product.imageUrl, product.altTxt);
     
     document.getElementById('image').appendChild(image);
     
-    document.getElementById('title').innerText = value.name;
-    document.getElementById('price').innerText = value.price;
-    document.getElementById('description').innerText = value.description;
+    document.getElementById('title').innerText = product.name;
+    document.getElementById('price').innerText = product.price;
+    document.getElementById('description').innerText = product.description;
     
     
     document.getElementById('addToCart').onclick = () => {
         const quantity = document.getElementById('quantity').value;
-        addCart(value._id, parseInt(quantity));
+        addCart(product._id, parseInt(quantity));
         
     }
 }
 
+/**
+ * Add the product to the cart in the localstorage
+ * @param {string} id 
+ * @param {number} quantity 
+ */
 const addCart = (id, quantity) => {
     if(Number.isNaN(quantity) || quantity <= 0) {
         document.getElementById('quantityErrorMsg').innerText = 'Quantité invalide';
