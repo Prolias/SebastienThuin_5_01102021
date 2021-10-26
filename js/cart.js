@@ -3,12 +3,12 @@ import { fetchData } from "../utils/fetcher.js";
 import { getAmountCart, returnAmount } from "../utils/gestionCart.js";
 import { api } from "../utils/utils.js";
 
-let cartLs = new Map();
+let cartLs = new Array();
 
 let total = 0;
 
 if(window.localStorage.panier != null) {
-    cartLs = new Map(JSON.parse(window.localStorage.panier));
+    cartLs = JSON.parse(window.localStorage.panier);
 }
 
 /**
@@ -49,11 +49,11 @@ const cycleData = () => {
         order.style.display= 'block';
     }
     
-    cartLs.forEach(async (value, key) => {
-        let line = await fetchData(api + key);
-        createLine(line, value);
+    cartLs.forEach(async (element, index, array) => {
+        let line = await fetchData(api + element.id);
+        createLine(line, element.qte, index, element.color);
         
-        total += line.price * value;
+        total += line.price * element.qte;
         
         setTotalPrice();
     })
@@ -65,8 +65,10 @@ const cycleData = () => {
  * Create a line with all the information of the product
  * @param {Array} object the product
  * @param {Number} qte the quantity of product
+ * @param {Number} index the index in localStorage
+ * @param {String} color the color of product
  */
-const createLine = (object, qte) => {
+const createLine = (object, qte, index, color) => {
     const line = createArticle('cart__item');
     line.dataset.id = object._id;
     
@@ -77,7 +79,7 @@ const createLine = (object, qte) => {
     
     const divContent = createDiv('cart__item__content');
     const divTitlePrice = createDiv('cart__item__content__titlePrice');
-    const title = createH2(object.name);
+    const title = createH2(`${object.name} | ${color}`);
     divTitlePrice.appendChild(title);
     const price = createP(`${object.price} €`);
     divTitlePrice.appendChild(price);
@@ -89,7 +91,7 @@ const createLine = (object, qte) => {
     const divDelete = createDiv('delete__item__content__settings__delete');
     const deleteBtn = createButton('Supprimer', 'deleteItem');
     deleteBtn.onclick = () => {
-        deleteItemCart(object._id);
+        deleteItemCart(index);
     }
     divDelete.appendChild(deleteBtn);
     divSettings.appendChild(divDelete);
@@ -101,12 +103,12 @@ const createLine = (object, qte) => {
 
 /**
  * Get the product and delete it from the cart
- * @param {Number} id of a product
+ * @param {Number} index in the cart
  */
-const deleteItemCart = id => {
-    cartLs.delete(id)
+const deleteItemCart = index => {
+    cartLs.splice(index, 1);
     
-    window.localStorage.panier = JSON.stringify(Array.from(cartLs));
+    window.localStorage.panier = JSON.stringify(cartLs);
     
     document.getElementById('cart__items').innerText = ''
     total = 0;
@@ -197,13 +199,13 @@ const postCart = async () => {
 
         const products = arrayProducts(cartLs);
 
+        console.log(products);
+
         if(testContact(contact)) {
             const body = {
                 "contact": contact,
                 "products": products
             }
-
-            console.log(body);
             
             window.localStorage.confirm = JSON.stringify(body);
             
@@ -222,9 +224,9 @@ const postCart = async () => {
 const arrayProducts = map => {
     let array = [];
 
-    map.forEach( (value, key) => {
-        for (let i = 0; i < value; i++) {
-            array.push(key);
+    map.forEach( (element, index) => {
+        for (let i = 0; i < element.qte; i++) {
+            array.push(element.id);
         }
     })
 

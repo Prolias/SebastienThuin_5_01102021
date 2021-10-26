@@ -8,8 +8,8 @@ const id = (new URL(document.location)).searchParams.get('id');
 let kanap;
 
 /**
- * Fetch the product from url then fill spaces in page or redirect to main page
- */
+* Fetch the product from url then fill spaces in page or redirect to main page
+*/
 
 const getKanap = async () => {
     getAmountCart();
@@ -28,9 +28,9 @@ const getKanap = async () => {
 }
 
 /**
- * Fill the page with the product value
- * @param {Array} product 
- */
+* Fill the page with the product value
+* @param {Array} product 
+*/
 const createProduct = product => {
     let image = createImage(product.imageUrl, product.altTxt);
     
@@ -40,43 +40,88 @@ const createProduct = product => {
     document.getElementById('price').innerText = product.price;
     document.getElementById('description').innerText = product.description;
     
+    const colors = document.getElementById('colors');
+    product.colors.forEach(color => {
+        let option = document.createElement('option');
+        option.value = color;
+        option.text = color;
+        colors.add(option);
+    });
     
     document.getElementById('addToCart').onclick = () => {
         const quantity = document.getElementById('quantity').value;
-        addCart(product._id, parseInt(quantity));
+        addCart(product._id, parseInt(quantity), colors.value);
         
     }
 }
 
 /**
- * Add the product to the cart in the localstorage
- * @param {string} id 
- * @param {number} quantity 
- */
-const addCart = (id, quantity) => {
+* Add the product to the cart in the localstorage
+* @param {string} id 
+* @param {number} quantity 
+* @param {string} color
+*/
+const addCart = (id, quantity, color) => {
+    if(correctCart(color, quantity)) {
+        const localS = window.localStorage;
+        let panier = localS.panier;
+        let indexPresent = -1;
+        
+        if(panier != null){
+            panier = JSON.parse(panier);
+            panier.forEach((element, index, array) => {
+                if(element.id == id && element.color == color) {
+                    indexPresent = index;
+                }
+            });
+        }
+        else {
+            panier = new Array();
+        }
+        
+        if(indexPresent != -1) {
+            panier[indexPresent].qte += quantity
+        }
+        else {
+            panier.push({
+                id: id,
+                color: color,
+                qte: quantity
+            })
+        }
+        
+        localS.panier = JSON.stringify(panier);
+        getAmountCart();
+    }
+}
+
+/**
+* Check if the color and quantity are correct
+* @param {string} color 
+* @param {number} quantity 
+* @returns a boolean based on color and quantity
+*/
+const correctCart = (color, quantity) => {
+    let colorBool = false;
+    let quantityBool = false;
+    
+    if(color == '') {
+        document.getElementById('colorErrorMsg').innerText = 'Couleur invalide';
+    }
+    else {
+        document.getElementById('colorErrorMsg').innerText = '';
+        colorBool = true;
+    }
+    
     if(Number.isNaN(quantity) || quantity <= 0) {
         document.getElementById('quantityErrorMsg').innerText = 'Quantité invalide';
     }
     else {
         document.getElementById('quantityErrorMsg').innerText = '';
-        const localS = window.localStorage;
-        let panier = localS.panier;
-        if(panier != null){
-            panier = new Map(JSON.parse(panier));
-        }
-        else {
-            panier = new Map();
-        }
-        if(panier.has(id)) {
-            panier.set(id, panier.get(id) + quantity);
-        }
-        else {
-            panier.set(id, quantity);
-        }
-        
-        localS.panier = JSON.stringify(Array.from(panier));
-        getAmountCart();
+        quantityBool = true;
     }
+    
+    return (colorBool && quantityBool);
 }
 
 getKanap();

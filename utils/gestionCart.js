@@ -20,9 +20,9 @@ export const returnAmount = () => {
     let cartAmount = 0;
     let cart = storage.panier;
     if(cart != null) {
-        cart = new Map(JSON.parse(cart));
-        cart.forEach((value, key, map) => {
-            cartAmount += value
+        cart = JSON.parse(cart);
+        cart.forEach((element, index, array) => {
+            cartAmount += element.qte
         })
     }
     return cartAmount;

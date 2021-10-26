@@ -1,9 +1,11 @@
-import { api } from "../utils/utils";
+import { getAmountCart } from "../utils/gestionCart.js";
+import { api } from "../utils/utils.js";
 
 /**
  * If the confirm array in localstorage is found execute the confirm function else redirect to the main page
  */
 const commande = () => {
+    getAmountCart()
     if(window.localStorage.confirm) {
         confirm()
     }
@@ -30,6 +32,7 @@ const confirm = async () => {
     document.getElementById("orderId").innerText = result.orderId;
 
     window.localStorage.clear();
+    getAmountCart();
 }
 
 commande();
