@@ -41,6 +41,8 @@ const setTotalQte = () => {
  * Cycle through all the products in the localStorage then call the createLine function
  */
 const cycleData = () => {
+    document.getElementById('cart__items').innerText = '';
+    total = 0;
     const order = document.getElementById('cartForm');
     if(returnAmount() == 0) {
         order.style.display = 'none';
@@ -52,13 +54,24 @@ const cycleData = () => {
     cartLs.forEach(async (element, index, array) => {
         let line = await fetchData(api + element.id);
         createLine(line, element.qte, index, element.color);
+    })
+
+    totalPrice();    
+    setTotalQte();
+}
+
+/**
+ * Get the total price for the cart
+ */
+const totalPrice = () => {
+    total = 0;
+    cartLs.forEach(async (element, index, array) => {
+        let product = await fetchData(api + element.id);
         
-        total += line.price * element.qte;
+        total += product.price * element.qte;
         
         setTotalPrice();
     })
-    
-    setTotalQte();
 }
 
 /**
@@ -86,7 +99,18 @@ const createLine = (object, qte, index, color) => {
     divContent.appendChild(divTitlePrice);
     const divSettings = createDiv('cart__item__content__settings');
     const divQuantite = createDiv('quantite__item__content__settings__quantity')
-    divQuantite.appendChild(createP(`Qté : ${qte}`));
+    divQuantite.appendChild(createP(`Qté :`));
+    const inputQuantite = document.createElement('input');
+    inputQuantite.type = 'number';
+    inputQuantite.className = 'itemQuantity'
+    inputQuantite.name = 'itemQuantity';
+    inputQuantite.min = 1;
+    inputQuantite.max = 100;
+    inputQuantite.value = qte;
+    inputQuantite.onchange = () => {
+        changeQteProduct(index, inputQuantite);
+    }
+    divQuantite.appendChild(inputQuantite);
     divSettings.appendChild(divQuantite);
     const divDelete = createDiv('delete__item__content__settings__delete');
     const deleteBtn = createButton('Supprimer', 'deleteItem');
@@ -102,6 +126,19 @@ const createLine = (object, qte, index, color) => {
 }
 
 /**
+ * Change the total quantity and the total price in terms of the input value for each product
+ * @param {number} index • product index in cartLs
+ * @param {DomElement} inputQuantite • The input elemenbt which contains the value
+ */
+const changeQteProduct = (index, inputQuantite) => {
+    cartLs[index].qte = parseInt(inputQuantite.value);
+    window.localStorage.panier = JSON.stringify(cartLs);
+    setTotalQte();
+    getAmountCart();
+    totalPrice();
+}
+
+/**
  * Get the product and delete it from the cart
  * @param {Number} index in the cart
  */
@@ -109,9 +146,6 @@ const deleteItemCart = index => {
     cartLs.splice(index, 1);
     
     window.localStorage.panier = JSON.stringify(cartLs);
-    
-    document.getElementById('cart__items').innerText = ''
-    total = 0;
     
     setTotalPrice();
     
