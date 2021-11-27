@@ -3,28 +3,32 @@ import { fetchData } from "../utils/fetcher.js";
 import { getAmountCart } from "../utils/gestionCart.js";
 import { api } from "../utils/utils.js";
 
-const id = (new URL(document.location)).searchParams.get('id');
-
-let kanap;
-
 /**
-* Fetch the product from url then fill spaces in page or redirect to main page
-*/
+ * Fetch the product from url then fill spaces in page or redirect to main page
+ */
 
 const getKanap = async () => {
     getAmountCart();
     
-    kanap = await fetchData(api + id);
-    
-    if(id == null || Object.keys(kanap).length === 0) {
-        const redirect = new URL(window.location.origin + "/404");
-        window.location.href = redirect;
+    const id = (new URL(document.location)).searchParams.get('id');
+
+    if(id == null) redirect404();
+    else {
+        fetchData(api + id)
+        .then(kanap => {
+            if(Object.keys(kanap).length === 0) redirect404();
+            else{
+                document.title = kanap.name
+                
+                createProduct(kanap);
+            }
+        })
+        .catch(err => console.error(`Error while atempting to fetch product ${id}: \n ${err}`))
     }
-    else{
-        document.title = kanap.name
-        
-        createProduct(kanap);
-    }
+}
+
+const redirect404 = () => {
+    window.location.href = new URL(window.location.origin + "/404");
 }
 
 /**

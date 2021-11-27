@@ -10,8 +10,7 @@ const commande = () => {
         confirm()
     }
     else {
-        const redirect = new URL(window.location.origin + "/404");
-        window.location.href = redirect;
+        window.location.href = new URL(window.location.origin + "/404");
     }
 }
 

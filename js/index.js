@@ -3,20 +3,20 @@ import { fetchData } from "../utils/fetcher.js";
 import { getAmountCart } from "../utils/gestionCart.js";
 import { api } from "../utils/utils.js";
 
-let allKanap;
-
 /**
 * Fetch all Sofas from api and create a card for it
 */
 
-let getAllKanap = async () => {
+let getAllKanap = () => {
     getAmountCart();
 
-    allKanap = await fetchData(api);
-
-    allKanap.forEach(element => {
-        createCard(element)
-    });
+    fetchData(api)
+        .then(allKanap => {
+            allKanap.forEach(element => {
+                createCard(element)
+            });
+        })
+        .catch(err => console.error(`Error while atempting to fetch all products: \n ${err}`))
 }
 
 /**

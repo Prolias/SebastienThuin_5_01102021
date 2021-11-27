@@ -51,9 +51,10 @@ const cycleData = () => {
         order.style.display= 'block';
     }
     
-    cartLs.forEach(async (element, index, array) => {
-        let line = await fetchData(api + element.id);
-        createLine(line, element.qte, index, element.color);
+    cartLs.forEach((element, index) => {
+        fetchData(api + element.id)
+            .then(line => createLine(line, element.qte, index, element.color))
+            .catch(err => console.error(`Error while atempting to fetch product ${element.id}: \n ${err}`))
     })
 
     totalPrice();    
@@ -65,13 +66,17 @@ const cycleData = () => {
  */
 const totalPrice = () => {
     total = 0;
-    cartLs.forEach(async (element, index, array) => {
-        let product = await fetchData(api + element.id);
-        
-        total += product.price * element.qte;
-        
-        setTotalPrice();
-    })
+    if(cartLs.length == 0) setTotalPrice()
+    else{
+        cartLs.forEach((element) => {
+            fetchData(api + element.id)
+            .then(product => {
+                total += product.price * element.qte
+                setTotalPrice();
+            })
+            .catch(err => console.error(`Error while atempting to fetch product ${element.id}: \n ${err}`))
+        })
+    }
 }
 
 /**
@@ -146,8 +151,7 @@ const deleteItemCart = index => {
     cartLs.splice(index, 1);
     
     window.localStorage.panier = JSON.stringify(cartLs);
-    
-    setTotalPrice();
+    totalPrice();
     
     cycleData();
     
